@@ -1,7 +1,8 @@
 # Reto1
-## Rafael Córdoba López Código:201630880 Correo: rf.cordoba@uniandes.edu.co
+## Rafael Córdoba López        Código:201630880 Correo: rf.cordoba@uniandes.edu.co
 ###
-
+## Jaime Andres Torres Bermejo Código:202014866 Correo:j.torres16@uniandes.edu.co  
+## Esteban Gonzalez Amaya      Código:202010737 Correo:e.gonzaleza@uniandes.edu.co 
 ### REQ 1:Descubrir productoras de cine 
 
 La estructura tiene los siguiente directorios y archivos:
@@ -30,4 +31,4 @@ Este directorio contiene todo el código de base que se entrega para el funciona
 -Test
 Este directorio contiene las pruebas realizadas a los TADs, Estructuras de Datos y Algoritmos.
 
-*---INTEGRANTES--- *Jaime Andres Torres Bermejo *202014866 *j.torres16@uniandes.edu.co * *Esteban Gonzalez Amaya *202010737 *e.gonzaleza@uniandes.edu.co *
+
