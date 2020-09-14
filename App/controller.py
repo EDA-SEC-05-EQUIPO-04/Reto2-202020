@@ -24,7 +24,7 @@ import config as cf
 from App import model
 import csv
 from DISClib.ADT import list as lt
-
+from time import process_time 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 Existen algunas operaciones en las que se necesita invocar
@@ -36,7 +36,13 @@ recae sobre el controlador.
 # ___________________________________________________
 #  Inicializacion del catalogo
 # ___________________________________________________
-
+def initCatalog():
+    """
+    Llama la funcion de inicializacion del catalogo del modelo.
+    """
+    # catalog es utilizado para interactuar con el modelo
+    catalog = model.newCatalog()
+    return catalog
 
 
 
@@ -45,41 +51,59 @@ recae sobre el controlador.
 #  de datos en los modelos
 # ___________________________________________________
 
+def loadData(catalog, Moviesfile,Castingfile):
+    """
+    Carga los datos de los archivos en el modelo
+    """
+    loadDetails(catalog, Moviesfile)
+    loadCastings(catalog, Castingfile)
 
-
-def compareRecordIds (recordA, recordB):
-    if int(recordA['id']) == int(recordB['id']):
-        return 0
-    elif int(recordA['id']) > int(recordB['id']):
-        return 1
-    return -1
-
-def loadCSVFile (file, cmpfunction):
-    lst=lt.newList("ARRAY_LIST", cmpfunction)
+def loadDetails(catalog, Moviesfile):
     dialect = csv.excel()
     dialect.delimiter=";"
     try:
-        with open(  cf.data_dir + file, encoding="utf-8") as csvfile:
-            row = csv.DictReader(csvfile, dialect=dialect)
-            for elemento in row: 
-                lt.addLast(lst,elemento)
+        with open( Moviesfile, encoding="utf-8") as csvfile:
+            spamreader = csv.DictReader(csvfile, dialect=dialect)
+            for row in spamreader:
+                model.addDetails(catalog, row)
+                authors = row['production_companies']  # Se obtienen los autores
+                model.addProductoraMovie(catalog, authors, row)             
     except:
         print("Hubo un error con la carga del archivo")
-    return lst
-
     
-def loadMovies ():
-    lst = loadCSVFile(("SmallMoviesDetailsCleaned.csv"),compareRecordIds) 
-    print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
-    return lst
+    return 0
 
-def loadMovieCast ():
-    lst = loadCSVFile(("MoviesCastingRaw-small.csv"),compareRecordIds) 
-    print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
-    return lst
+def loadCastings(catalog, Moviesfile):
+    dialect = csv.excel()
+    dialect.delimiter=";"
+    try:
+        with open( Moviesfile, encoding="utf-8") as csvfile:
+            spamreader = csv.DictReader(csvfile, dialect=dialect)
+            for row in spamreader:
+                model.addCasting(catalog, row)                
+    except:
+        print("Hubo un error con la carga del archivo")
+    
+    return 0
 
-def encontrar_elemento(camino,posicion):
-    lista_details = model.crear_lista(camino)
-    primero = lt.getElement(lista_details,posicion)
-    respuesta = "El título de la película: " + primero["title"] + ", " + "La fecha de estreno: " + primero["release_date"] + ", " + "El promedio de la votación: " + primero["vote_average"]+ ", " +"Número de votos: " + primero["vote_count"]+ ", " + "Idioma de la película: " + primero["original_language"]
-    return respuesta
+# ___________________________________________________
+#  Funciones para consultas
+# ___________________________________________________
+def productorasSize(catalog):
+    return model.productorasSize(catalog)
+
+
+def getMoviesByProductora(catalog, productoraname):
+    productorainfo = model.getMoviesByProductora(catalog, productoraname)
+    return productorainfo
+
+
+def detailSize(catalog):
+    return model.detailSize(catalog)
+
+def castingSize(catalog):
+    return model.castingSize(catalog)
+
+def encontrarElemento(camino,posicion):
+    return model.encontrarElemento(camino,posicion)
+

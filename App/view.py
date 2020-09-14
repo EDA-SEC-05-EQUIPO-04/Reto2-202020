@@ -50,7 +50,24 @@ archivo_details = "Data\SmallMoviesDetailsCleaned.csv"
 #  respuesta.  La vista solo interactua con
 #  el controlador.
 # ___________________________________________________
-
+def printProductoraData(productor):
+    """
+    Imprime los libros de un autor determinado
+    """
+    if productor:
+        print('Productor encontrado: ' + productor['name'])
+        #print('Promedio: ' + str(productor['average_rating']))
+        print('Total de peliculas: ' + str(lt.size(productor['movies'])))
+        iterator = it.newIterator(productor['movies'])
+        promedio=0
+        while it.hasNext(iterator):
+            movie = it.next(iterator)
+            print('Titulo: ' + movie['original_title'] + '  Promedio: ' + movie['vote_average'])
+            promedio+= float(movie['vote_average'])
+        promedio *= 1/lt.size(productor['movies'])
+        print("Calificación promedio de la productora: {:.2f}/10".format(promedio))
+    else:
+        print('No se encontro el autor')
 
 
 
@@ -85,14 +102,19 @@ def main():
         if len(inputs)>0:
 
             if int(inputs[0]) ==1: #opcion 1
-                casting = controller.loadMovieCast()
-                details = controller.loadMovies()
-                ultima_pelicula = controller.encontrar_elemento(archivo_details,0)
-                primera_pelicula = controller.encontrar_elemento(archivo_details,2000)
-                print("\nUltima pelicula: \n"+ ultima_pelicula+ "\n")
-                print("Primera_pelicula: \n"+ primera_pelicula)
+                print("Inicializando Catálogo ....")
+                # cont es el controlador que se usará de acá en adelante
+                cont = controller.initCatalog()
+                print("Cargando información de los archivos ....")
+                controller.loadData(cont, (archivo_details),(archivo_casting))
+                print('Numero peliculas cargadas: ' + str(controller.detailSize(cont)))
+                print(controller.encontrarElemento(cont,1))
+                print(controller.encontrarElemento(cont,2000))
             elif int(inputs[0]) ==2: #opcion 2
-                pass
+                print("Se encontraron {} productoras".format(controller.productorasSize(cont)))
+                productorname = input("Nombre de la productora a buscar: ")
+                productorinfo = controller.getMoviesByProductora(cont, productorname)
+                printProductoraData(productorinfo)
             elif int(inputs[0])==3: #opcion 3
                 pass
             elif int(inputs[0])==4: #opcion 4
@@ -102,5 +124,5 @@ def main():
             elif int(inputs[0])==0:
                 sys.exit(0)
                 
-
-main()
+if __name__ == "__main__":
+    main()
