@@ -24,6 +24,7 @@ import csv
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
+from DISClib.DataStructures import listiterator as li
 assert config
 
 """
@@ -43,7 +44,7 @@ def newCatalog():
 
     catalog['details'] = lt.newList('SINGLE_LINKED', compareMovieIds)
     catalog['casting'] = lt.newList('SINGLE_LINKED', compareMovieIds)
-    catalog['productoras'] = mp.newMap(1000,
+    catalog['productoras'] = mp.newMap(36000,
                                    loadfactor=0.4,
                                    comparefunction=compareMapName)
 
@@ -83,10 +84,23 @@ def productorasSize(catalog):
     return mp.size(catalog['productoras'])
 
 def getMoviesByProductora(catalog, producername):
-    producer = mp.get(catalog['productoras'], producername)
-    if producer:
-        return me.getValue(producer)
-    return None
+    
+    lst=mp.keySet(catalog['productoras'])
+    n=4
+    iterator=li.newIterator(lst)
+    lista_producers=lt.newList()
+    while li.hasNext(iterator):
+        element=li.next(iterator)
+        if  producername.lower() in element.lower():
+            producer = mp.get(catalog['productoras'], element)
+            if producer:
+                #return me.getValue(producer)
+                lt.addLast(lista_producers,me.getValue(producer))
+    if lt.isEmpty(lista_producers):
+        return None
+    return lista_producers
+    #return None
+    
 
 def detailSize(catalog):
     return lt.size(catalog['details'])

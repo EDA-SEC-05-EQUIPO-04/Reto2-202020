@@ -26,7 +26,7 @@ from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 from App import controller
 assert config
-
+from time import process_time 
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones y por cada seleccion
@@ -38,34 +38,41 @@ operación seleccionada.
 #  Ruta a los archivos
 # ___________________________________________________
 
-archivo_casting = "Data\MoviesCastingRaw-small.csv"
-archivo_details = "Data\SmallMoviesDetailsCleaned.csv"
+#archivo_casting = "Data\MoviesCastingRaw-small.csv"
+archivo_casting = "Data\AllMoviesCastingRaw.csv"
+archivo_details = "Data\AllMoviesDetailsCleaned.csv"
+#archivo_details = "Data\SmallMoviesDetailsCleaned.csv"
 
-"Por favor inserte el relative path de su archivo"
-#archivo_casting = 
-#archivo_details = 
+
 
 # ___________________________________________________
 #  Funciones para imprimir la inforamación de
 #  respuesta.  La vista solo interactua con
 #  el controlador.
 # ___________________________________________________
-def printProductoraData(productor):
+def printProductoraData(productor1):
     """
     Imprime los libros de un autor determinado
     """
-    if productor:
-        print('Productor encontrado: ' + productor['name'])
-        #print('Promedio: ' + str(productor['average_rating']))
-        print('Total de peliculas: ' + str(lt.size(productor['movies'])))
-        iterator = it.newIterator(productor['movies'])
-        promedio=0
-        while it.hasNext(iterator):
-            movie = it.next(iterator)
-            print('Titulo: ' + movie['original_title'] + '  Promedio: ' + movie['vote_average'])
-            promedio+= float(movie['vote_average'])
-        promedio *= 1/lt.size(productor['movies'])
-        print("Calificación promedio de la productora: {:.2f}/10".format(promedio))
+    if productor1:
+        print('\nSe encontraron {} productoras con el parametro de busqueda. '.format(lt.size(productor1)))
+        iterator1 =it.newIterator(productor1)
+        while it.hasNext(iterator1):
+            productor=it.next(iterator1)
+            print('\nProductor encontrado: ' + productor['name'])
+            print('Total de peliculas: ' + str(lt.size(productor['movies'])))
+            iterator = it.newIterator(productor['movies'])
+            promedio=0
+            print("")
+            print("{0:<50}{1:<20}{2:>8}".format("Titulo: ","Promedio:","Productora:"))
+
+            while it.hasNext(iterator):
+                movie = it.next(iterator)
+            
+                print("{0:<50}{1:<20}{2:>8}".format(movie['original_title'], movie['vote_average'], movie['production_companies']))
+                promedio+= float(movie['vote_average'])
+            promedio *= 1/lt.size(productor['movies'])
+            print("\nCalificación promedio de la productora: {:.2f}/10".format(promedio))
     else:
         print('No se encontro el autor')
 
@@ -102,19 +109,25 @@ def main():
         if len(inputs)>0:
 
             if int(inputs[0]) ==1: #opcion 1
+                t1=process_time() 
                 print("Inicializando Catálogo ....")
                 # cont es el controlador que se usará de acá en adelante
                 cont = controller.initCatalog()
                 print("Cargando información de los archivos ....")
                 controller.loadData(cont, (archivo_details),(archivo_casting))
+                t2=process_time()
+                print ("Tiempo de carga: {}".format(t2-t1))
                 print('Numero peliculas cargadas: ' + str(controller.detailSize(cont)))
                 print(controller.encontrarElemento(cont,1))
                 print(controller.encontrarElemento(cont,2000))
             elif int(inputs[0]) ==2: #opcion 2
                 print("Se encontraron {} productoras".format(controller.productorasSize(cont)))
                 productorname = input("Nombre de la productora a buscar: ")
+                t1=process_time()
                 productorinfo = controller.getMoviesByProductora(cont, productorname)
                 printProductoraData(productorinfo)
+                t2=process_time()
+                print ("Tiempo de carga: {}".format(t2-t1))
             elif int(inputs[0])==3: #opcion 3
                 pass
             elif int(inputs[0])==4: #opcion 4
