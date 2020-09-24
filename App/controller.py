@@ -24,6 +24,7 @@ import config as cf
 from App import model
 import csv
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
 from time import process_time 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -62,12 +63,22 @@ def loadDetails(catalog, Moviesfile):
     dialect = csv.excel()
     dialect.delimiter=";"
     try:
-        with open( Moviesfile, encoding="utf-8") as csvfile:
+        with open( Moviesfile, encoding="utf-8-sig") as csvfile:
             spamreader = csv.DictReader(csvfile, dialect=dialect)
             for row in spamreader:
                 model.addDetails(catalog, row)
                 authors = row['production_companies']  # Se obtienen los autores
-                model.addProductoraMovie(catalog, authors, row)             
+                model.addProductoraMovie(catalog, authors, row)   
+                name_id=row['id']
+                model.addIdMovie(catalog,name_id,row)
+                genres=row['genres']
+                genres=genres.split("|")
+                for genre in genres:
+                    model.addGenreMovie(catalog, genre, row)
+                countries=row['production_countries']     
+                countries=countries.split("|")
+                for country in countries:
+                    model.addCountryMovie(catalog, country, row)          
     except:
         print("Hubo un error con la carga del archivo")
     
@@ -80,7 +91,14 @@ def loadCastings(catalog, Moviesfile):
         with open( Moviesfile, encoding="utf-8") as csvfile:
             spamreader = csv.DictReader(csvfile, dialect=dialect)
             for row in spamreader:
-                model.addCasting(catalog, row)                
+                model.addCasting(catalog, row)   
+                authors = row['director_name']  # Se obtienen los autores
+                model.addDirectorMovie(catalog, authors, row)
+                for i in range (1,6):
+                    author_name="actor{}_name".format(i)
+                    model.addActorMovie(catalog, row[author_name], row)    
+                name_id=row['id']
+                model.addIdCastingMovie(catalog,name_id,row)              
     except:
         print("Hubo un error con la carga del archivo")
     
@@ -92,11 +110,43 @@ def loadCastings(catalog, Moviesfile):
 def productorasSize(catalog):
     return model.productorasSize(catalog)
 
+def directoresSize(catalog):
+    return model.directoresSize(catalog)
+
+def genresSize(catalog):
+    return model.genresSize(catalog)
+
+def actoresSize(catalog):
+    return model.actoresSize(catalog)
+
+def countriesSize(catalog):
+    return model.countriesSize(catalog)
+
+def getMovieById(id,lista):
+    return model.getMovieById(lista,id)
+
+def getMovieByIdCasting(id,lista):
+    return model.getMovieByIdCasting(lista,id)
 
 def getMoviesByProductora(catalog, productoraname):
     productorainfo = model.getMoviesByProductora(catalog, productoraname)
     return productorainfo
 
+def getMoviesByDirector(catalog, directorname):
+    directorinfo = model.getMoviesByDirector(catalog, directorname)
+    return directorinfo
+
+def getMoviesByActor(catalog, directorname):
+    directorinfo = model.getMoviesByActor(catalog, directorname)
+    return directorinfo
+
+def getMoviesByGenre(catalog, directorname):
+    genreinfo = model.getMoviesByGenre(catalog, directorname)
+    return genreinfo
+
+def getMoviesByCountry(catalog, directorname):
+    directorinfo = model.getMoviesByCountry(catalog, directorname)
+    return directorinfo
 
 def detailSize(catalog):
     return model.detailSize(catalog)
